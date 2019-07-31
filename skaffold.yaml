@@ -1,0 +1,30 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  local:
+    push: false # Do not push to repo/hub
+  artifacts:
+    - image: horimz/multi-client
+      context: client
+      docker:
+        dockerfile: Dockerfile.dev
+      sync: # Mode 2
+        '**/*.js': .
+        '**/*.css': .
+        '**/*.html': .
+    - image: horimz/multi-server
+      context: server
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        '**.*.js': .
+    - image: horimz/multi-worker
+      context: worker
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        '**/*.js': .
+deploy:
+  kubectl:
+    manifests:
+      - k8s/client-deployment.yaml
